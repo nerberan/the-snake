@@ -46,7 +46,10 @@ class GameObject():
     для игровых объектов Apple и Snake
     """
 
-    def __init__(self, position: tuple, body_color: tuple) -> None:
+    def __init__(
+        self, position: tuple = (GRID_WIDTH // 2, GRID_HEIGHT // 2),
+        body_color: tuple[int, int, int] = (0, 0, 0)
+    ) -> None:
         self.position = position
         self.body_color = body_color
 
@@ -59,7 +62,7 @@ class Apple(GameObject):
     """Класс для создания яблока"""
 
     def __init__(self) -> None:
-        super().__init__(position=(0, 0), body_color=APPLE_COLOR)
+        super().__init__(body_color=APPLE_COLOR)
         self.randomize_position()
 
     def randomize_position(self) -> None:
@@ -70,7 +73,11 @@ class Apple(GameObject):
 
     def draw(self) -> None:
         """Метод рисует само яблоко"""
-        rect = pygame.Rect(self.position, (GRID_SIZE, GRID_SIZE))
+        # Переведём сначала в пиксели
+        pixel_x = self.position[0] * GRID_SIZE
+        pixel_y = self.position[1] * GRID_SIZE
+        # Потом передадим эти координаты для отрисовки яблока
+        rect = pygame.Rect(pixel_x, pixel_y, GRID_SIZE, GRID_SIZE)
         pygame.draw.rect(screen, self.body_color, rect)
         pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
 
