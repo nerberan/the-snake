@@ -27,7 +27,7 @@ APPLE_COLOR = (255, 0, 0)
 SNAKE_COLOR = (0, 255, 0)
 
 # Скорость движения змейки:
-SPEED = 20
+SPEED = 5
 
 # Настройка игрового окна:
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), 0, 32)
@@ -97,7 +97,7 @@ class Snake(GameObject):
         """Метод возвращает первый элемент (голова змейки) из списка"""
         return self.positions[0]
 
-    def move(self) -> None:
+    def move(self, is_apple_eaten=False) -> None:
         """Метод описывает движение змейки"""
         # Получаем координаты головы змейки в клетках (16, 12)
         head_x, head_y = self.get_head_position()
@@ -114,8 +114,11 @@ class Snake(GameObject):
         # Добавляем новое положение головы змейки
         self.positions.insert(0, new_head_position)
 
-        # Если яблоко не съедено - хвост удаляется
-        if len(self.positions) > self.length:
+        """Если яблоко съедено, то увеличиваем длину змейки,
+        если не съедено - хвост удаляется"""
+        if is_apple_eaten:
+            self.length += 1
+        elif len(self.positions) > self.length:
             self.last = self.positions.pop()
         else:
             self.last = None
@@ -140,7 +143,7 @@ class Snake(GameObject):
     def draw(self) -> None:
         """Метод рисует змейку"""
         # Рисуем все сегменты кроме головы
-        for position in self.positions[:-1]:
+        for position in self.positions[1:]:
             pixel_x = position[0] * GRID_SIZE
             pixel_y = position[1] * GRID_SIZE
             rect = pygame.Rect(pixel_x, pixel_y, GRID_SIZE, GRID_SIZE)
@@ -191,13 +194,13 @@ def main():
         clock.tick(SPEED)
         handle_keys(snake)
         snake.update_direction()
-        snake.move()
 
         # Тут опишите основную логику игры.
-        if snake.get_head_position() == apple.position:
-            snake.length += 1
-            apple.randomize_position(snake.positions)
+        is_apple_eaten = snake.get_head_position() == apple.position
+        if is_apple_eaten:
+            apple.randomize_position()
 
+        snake.move(is_apple_eaten)
         screen.fill(BOARD_BACKGROUND_COLOR)
         apple.draw()
         snake.draw()
