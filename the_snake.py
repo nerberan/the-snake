@@ -1,4 +1,4 @@
-from random import randint
+from random import choice, randint
 
 import pygame
 
@@ -131,7 +131,7 @@ class Snake(GameObject):
         self.position = start_position
         self.positions = [start_position]
         self.length = 1
-        self.direction = RIGHT
+        self.direction = choice([UP, DOWN, LEFT, RIGHT])
         self.next_direction = None
 
     def update_direction(self) -> None:
