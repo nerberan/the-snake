@@ -55,7 +55,7 @@ class GameObject():
 
     def draw(self) -> None:
         """Для отрисовки объекта на экране screen"""
-        pass
+        raise NotImplementedError(f'Ошибка в классе{type(self).__name__}')
 
 
 class Apple(GameObject):
