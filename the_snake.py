@@ -61,15 +61,22 @@ class GameObject():
 class Apple(GameObject):
     """Класс для создания яблока"""
 
-    def __init__(self) -> None:
-        super().__init__(body_color=APPLE_COLOR)
-        self.randomize_position()
+    def __init__(
+            self,
+            body_color=APPLE_COLOR,
+            snake_positions: list[tuple] = [(0, 0)]) -> None:
+        super().__init__()
+        self.body_color = body_color
+        self.randomize_position(snake_positions)
 
-    def randomize_position(self) -> None:
+    def randomize_position(self, snake_positions) -> None:
         """Задаёт случайное положение яблока на экране"""
         rand_x = randint(0, GRID_WIDTH - 1)
         rand_y = randint(0, GRID_HEIGHT - 1)
         self.position = (rand_x, rand_y)
+        for position in snake_positions:
+            if self.position == position:
+                self.randomize_position(snake_positions)
 
     def draw(self) -> None:
         """Метод рисует само яблоко"""
@@ -87,17 +94,15 @@ class Snake(GameObject):
 
     def __init__(self) -> None:
         super().__init__(body_color=SNAKE_COLOR)
-        self.length = 1
-        self.positions = [self.position]
+        self.reset()
         self.direction = RIGHT
-        self.next_direction = None
         self.last = None
 
     def get_head_position(self) -> tuple:
         """Метод возвращает первый элемент (голова змейки) из списка"""
         return self.positions[0]
 
-    def move(self, is_apple_eaten=False) -> None:
+    def move(self) -> None:
         """Метод описывает движение змейки"""
         # Получаем координаты головы змейки в клетках (16, 12)
         head_x, head_y = self.get_head_position()
@@ -114,22 +119,15 @@ class Snake(GameObject):
         # Добавляем новое положение головы змейки
         self.positions.insert(0, new_head_position)
 
-        """Если яблоко съедено, то увеличиваем длину змейки,
-        если не съедено - хвост удаляется"""
-        if is_apple_eaten:
-            self.length += 1
-        elif len(self.positions) > self.length:
-            self.last = self.positions.pop()
-        else:
-            self.last = None
+        # Если яблоко съедено, то хвост удаляется
+        self.last = (
+            self.positions.pop() if len(self.positions) > self.length
+            else None
+        )
 
     def reset(self) -> None:
         """Метод возвращает змейку на начальную позицию"""
-        start_x = GRID_WIDTH // 2
-        start_y = GRID_HEIGHT // 2
-        start_position = (start_x, start_y)
-        self.position = start_position
-        self.positions = [start_position]
+        self.positions = [self.position]
         self.length = 1
         self.direction = choice([UP, DOWN, LEFT, RIGHT])
         self.next_direction = None
@@ -187,8 +185,8 @@ def main():
     # Инициализация PyGame:
     pygame.init()
     # Тут нужно создать экземпляры классов.
-    apple = Apple()
     snake = Snake()
+    apple = Apple(APPLE_COLOR, snake.positions)
 
     while True:
         clock.tick(SPEED)
@@ -198,9 +196,10 @@ def main():
         # Тут опишите основную логику игры.
         is_apple_eaten = snake.get_head_position() == apple.position
         if is_apple_eaten:
-            apple.randomize_position()
+            snake.length += 1
+            apple.randomize_position(snake.positions)
 
-        snake.move(is_apple_eaten)
+        snake.move()
         screen.fill(BOARD_BACKGROUND_COLOR)
         apple.draw()
         snake.draw()
