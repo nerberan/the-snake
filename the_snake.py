@@ -48,7 +48,7 @@ class GameObject():
 
     def __init__(
         self, position: tuple = (GRID_WIDTH // 2, GRID_HEIGHT // 2),
-        body_color: tuple[int, int, int] = (0, 0, 0)
+        body_color: tuple[int, int, int] = BOARD_BACKGROUND_COLOR
     ) -> None:
         self.position = position
         self.body_color = body_color
