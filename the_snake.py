@@ -189,17 +189,14 @@ def main():
         snake.update_direction()
 
         # Тут опишите основную логику игры.
-        is_apple_eaten = snake.get_head_position() == apple.position
-        if is_apple_eaten:
+        if snake.get_head_position() == apple.position:
             snake.length += 1
+            apple.randomize_position(snake.positions)
+        elif snake.get_head_position() in snake.positions[4:]:
+            snake.reset()
             apple.randomize_position(snake.positions)
 
         snake.move()
-
-        # Проверяем столкновение с телом змейки
-        if snake.positions[0] in snake.positions[1:]:
-            snake.reset()
-            apple.randomize_position(snake.positions)
 
         screen.fill(BOARD_BACKGROUND_COLOR)
         apple.draw()
