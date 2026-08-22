@@ -64,7 +64,7 @@ class Apple(GameObject):
     def __init__(
             self,
             body_color: tuple[int, int, int] = APPLE_COLOR,
-            snake_positions: list[tuple] = [(0, 0)]) -> None:
+            snake_positions: list[tuple[int, int]] | None = None) -> None:
         super().__init__(body_color=body_color)
         self.randomize_position(snake_positions)
 
@@ -199,6 +199,7 @@ def main():
         # Проверяем столкновение с телом змейки
         if snake.positions[0] in snake.positions[1:]:
             snake.reset()
+            apple.randomize_position(snake.positions)
 
         screen.fill(BOARD_BACKGROUND_COLOR)
         apple.draw()
