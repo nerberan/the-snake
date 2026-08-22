@@ -64,8 +64,10 @@ class Apple(GameObject):
     def __init__(
             self,
             body_color: tuple[int, int, int] = APPLE_COLOR,
-            snake_positions: list[tuple[int, int]] = [(0, 0)]) -> None:
+            snake_positions: list[tuple[int, int]] | None = None) -> None:
         super().__init__(body_color=body_color)
+        if snake_positions is None:
+            snake_positions = []
         self.randomize_position(snake_positions)
 
     def randomize_position(self, snake_positions) -> None:
