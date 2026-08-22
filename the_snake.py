@@ -95,7 +95,7 @@ class Snake(GameObject):
         super().__init__(body_color=SNAKE_COLOR)
         self.reset()
         self.direction = RIGHT
-        self.last = None
+        self.last: tuple[int, int] | None = None
 
     def get_head_position(self) -> tuple:
         """Метод возвращает первый элемент (голова змейки) из списка"""
@@ -111,10 +111,6 @@ class Snake(GameObject):
         new_head_position = ((head_x + dir_x) % GRID_WIDTH,
                              (head_y + dir_y) % GRID_HEIGHT)
 
-        # Проверяем столкновение с телом змейки
-        if new_head_position in self.positions:
-            self.reset()
-            return
         # Добавляем новое положение головы змейки
         self.positions.insert(0, new_head_position)
 
@@ -199,6 +195,11 @@ def main():
             apple.randomize_position(snake.positions)
 
         snake.move()
+
+        # Проверяем столкновение с телом змейки
+        if snake.positions[0] in snake.positions[1:]:
+            snake.reset()
+
         screen.fill(BOARD_BACKGROUND_COLOR)
         apple.draw()
         snake.draw()
