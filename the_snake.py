@@ -66,18 +66,16 @@ class Apple(GameObject):
             body_color: tuple[int, int, int] = APPLE_COLOR,
             snake_positions: list[tuple[int, int]] | None = None) -> None:
         super().__init__(body_color=body_color)
-        if snake_positions is None:
-            snake_positions = []
-        self.randomize_position(snake_positions)
+        self.randomize_position(snake_positions or [])
 
     def randomize_position(self, snake_positions) -> None:
         """Задаёт случайное положение яблока на экране"""
-        rand_x = randint(0, GRID_WIDTH - 1)
-        rand_y = randint(0, GRID_HEIGHT - 1)
-        self.position = (rand_x, rand_y)
-        for position in snake_positions:
-            if self.position == position:
-                self.randomize_position(snake_positions)
+        while True:
+            rand_x = randint(0, GRID_WIDTH - 1)
+            rand_y = randint(0, GRID_HEIGHT - 1)
+            self.position = (rand_x, rand_y)
+            if self.position not in snake_positions:
+                break
 
     def draw(self) -> None:
         """Метод рисует само яблоко"""
